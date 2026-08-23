@@ -1,81 +1,51 @@
-import 'package:deligo_app/ui/dashboard.dart';
-import 'package:deligo_app/ui/landing.dart';
-import 'package:deligo_app/ui/settings.dart';
 import 'package:flutter/material.dart';
-import './ui/components/splash_screen.dart';
-
-// import 'landing.dart';
-// import 'dashboard.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'viewmodels/ros_view_model.dart';
+import 'views/home_screen.dart';
+import 'widgets/session_guard.dart'; // Import the guard
 
 void main() {
-  runApp(const DeligoApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RosViewModel()),
+      ],
+      child: const DodoBotApp(),
+    ),
+  );
 }
 
-class DeligoApp extends StatelessWidget {
-  const DeligoApp({super.key});
+class DodoBotApp extends StatelessWidget {
+  const DodoBotApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Deligo Robot',
-      debugShowCheckedModeBanner: false,//removes the top banner
+      debugShowCheckedModeBanner: false,
+      title: 'DODO Bot Controller',
       theme: ThemeData(
-        useMaterial3: true, // ✅ Enables Material 3 styling
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 7, 165, 189)),
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
-        ),
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF5F6FA),
+        primaryColor: const Color(0xFF007AFF),
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-
-      // initial page
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return _buildPageRoute(const LandingPage());
-          case '/dashboard':
-            return _buildPageRoute(const DashboardPage());
-          default:
-            return _buildPageRoute(const LandingPage());
-        }
-      },
+      // WRAP THE HOME SCREEN IN THE SESSION GUARD
+      home: const SessionGuard(
+        timeout: Duration(seconds: 10000), // Set idle time (e.g., 30 seconds for testing)
+        child: HomeScreen(),
+      ),
+      // Define routes if needed for deep linking
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/landing': (context) => const LandingPage(),
-        '/screensaver': (context) => const SplashScreen(),
-        '/dashboard': (context) => const DashboardPage(),
-        '/settings': (context) => const SettingsPage(),
-        '/mapping': (context) => const MappingPage(),
-        '/music': (context) => const MusicPage(),
-        '/status': (context) => const StatusPage(),
-      },
-    );
-  }
-
-  /// Custom fade + slide transition
-  PageRouteBuilder _buildPageRoute(Widget page) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final slide = Tween(begin: const Offset(0.1, 0), end: Offset.zero)
-            .animate(animation);
-        final fade = Tween(begin: 0.0, end: 1.0).animate(animation);
-
-        return SlideTransition(
-          position: slide,
-          child: FadeTransition(opacity: fade, child: child),
-        );
+        '/home': (context) => const HomeScreen(),
       },
     );
   }
 }
-
-
-
-

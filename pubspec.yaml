@@ -1,7 +1,7 @@
 name: deligo_app
 description: A new Flutter project.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -9,10 +9,19 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
+
+  video_player: ^2.8.6
+
   flutter:
     sdk: flutter
-  font_awesome_flutter: ^10.7.0
-  video_player: ^2.10.0
+  
+  provider: ^6.0.0
+  
+  # The ONLY surviving ROS 2 Bridge package for Dart 3
+  rosbridge: ^0.0.3-dev+4
+  
+  google_fonts: ^6.1.0
+  font_awesome_flutter: ^10.6.0
 
 dev_dependencies:
   flutter_test:

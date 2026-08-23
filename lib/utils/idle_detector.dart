@@ -7,11 +7,11 @@ class IdleDetector extends StatefulWidget {
   final VoidCallback onIdle;
 
   const IdleDetector({
-    Key? key,
+    super.key,
     required this.child,
     required this.onIdle,
     this.idleDuration = const Duration(seconds: 15),
-  }) : super(key: key);
+  });
 
   @override
   State<IdleDetector> createState() => _IdleDetectorState();

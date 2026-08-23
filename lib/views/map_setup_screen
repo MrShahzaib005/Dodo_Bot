@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/ros_view_model.dart';
+import '../widgets/map_painter.dart';
+
+class MapSetupScreen extends StatelessWidget {
+  const MapSetupScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Live Map Building")),
+      body: Consumer<RosViewModel>(
+        builder: (context, ros, child) {
+          if (!ros.isConnected) {
+            return const Center(child: Text("Connecting to Robot...", style: TextStyle(color: Colors.red)));
+          }
+
+          if (ros.mapImage == null) {
+            return const Center(child: CircularProgressIndicator(color: Colors.blue));
+          }
+
+          return InteractiveViewer(
+            // Allows Pan and Zoom (Like Google Maps)
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Center(
+              child: CustomPaint(
+                size: Size(800, 600), // Arbitrary canvas size
+                painter: MapPainter(mapImage: ros.mapImage),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
